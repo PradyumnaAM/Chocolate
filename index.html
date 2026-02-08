@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chocolate Emergency</title>
 
 <style>
@@ -17,7 +18,7 @@ body {
     overflow: hidden;
 }
 
-/* INTRO */
+/* ================= INTRO ================= */
 
 #intro {
     position: fixed;
@@ -29,20 +30,19 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 40px;
+    padding: 20px;
 }
 
 #storyText {
-    font-size: 48px;
-    max-width: 900px;
-    opacity: 1;
-    transition: opacity 1s;
+    font-size: clamp(22px, 5vw, 48px);
+    max-width: 90%;
+    line-height: 1.4;
 }
 
 #continueBtn, #skipBtn {
-    margin-top: 40px;
-    padding: 15px 40px;
-    font-size: 20px;
+    margin-top: 30px;
+    padding: 12px 30px;
+    font-size: clamp(16px, 4vw, 20px);
     border-radius: 30px;
     border: none;
     cursor: pointer;
@@ -50,13 +50,13 @@ body {
 
 #skipBtn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     background: #ff6a88;
     color: white;
 }
 
-/* GAME */
+/* ================= GAME ================= */
 
 #gameScreen {
     display: none;
@@ -69,6 +69,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    padding: 10px;
 }
 
 @keyframes gradientMove {
@@ -78,8 +79,9 @@ body {
 }
 
 h1 {
-    margin-top: 20px;
-    font-size: 60px;
+    font-size: clamp(24px, 6vw, 60px);
+    margin-top: 10px;
+    text-align: center;
 }
 
 #scene {
@@ -87,28 +89,39 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 150px;
+    gap: 8vw;
+    width: 100%;
+}
+
+/* Stack vertically on small screens */
+@media (max-width: 768px) {
+    #scene {
+        flex-direction: column;
+        gap: 20px;
+    }
 }
 
 .character {
-    height: 420px;
+    width: clamp(150px, 35vw, 420px);
+    height: auto;
     transition: 0.4s ease;
 }
 
 #message {
-    font-size: 32px;
+    font-size: clamp(18px, 4.5vw, 32px);
     text-align: center;
-    margin-bottom: 20px;
+    margin: 10px;
+    padding: 0 10px;
 }
 
 .buttons {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 button {
-    padding: 20px 50px;
-    font-size: 24px;
-    margin: 15px;
+    padding: 12px 25px;
+    font-size: clamp(16px, 4vw, 24px);
+    margin: 10px;
     border-radius: 40px;
     border: none;
     cursor: pointer;
@@ -118,11 +131,11 @@ button {
 #yesBtn { background: #00ffcc; }
 #noBtn { background: #ff0033; color: white; }
 
-button:hover {
-    transform: scale(1.2);
+button:active {
+    transform: scale(1.1);
 }
 
-/* Ending */
+/* ================= ENDING ================= */
 
 #ending {
     position: fixed;
@@ -133,13 +146,15 @@ button:hover {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    font-size: 60px;
+    text-align: center;
+    font-size: clamp(28px, 8vw, 60px);
+    padding: 20px;
 }
 
 #restartBtn {
-    margin-top: 40px;
-    padding: 15px 40px;
-    font-size: 22px;
+    margin-top: 30px;
+    padding: 12px 30px;
+    font-size: clamp(16px, 4vw, 22px);
     border-radius: 30px;
     border: none;
     cursor: pointer;
@@ -170,7 +185,7 @@ button:hover {
     </div>
 
     <div id="message">
-        Dr. Dheeraja… will you accept this life-saving chocolate? 🍫💖
+        Doctor… will you accept this life-saving chocolate? 🍫💖
     </div>
 
     <div class="buttons">
@@ -182,13 +197,15 @@ button:hover {
 <!-- ENDING -->
 <div id="ending">
     <div>He Died 😢</div>
-    <div style="font-size:25px;margin-top:20px;">Chocolate Overdose...</div>
+    <div style="font-size:clamp(16px,4vw,25px); margin-top:15px;">
+        Chocolate Overdose...
+    </div>
     <button id="restartBtn">Restart 🔄</button>
 </div>
 
 <script>
 
-/* STORY FIXED */
+/* STORY */
 
 const storyLines = [
 "There was a man named Pradyumna...",
@@ -208,13 +225,7 @@ function showLine() {
     if(index < storyLines.length){
         storyText.innerHTML = storyLines[index];
         index++;
-        setTimeout(() => {
-            storyText.style.opacity = 0;
-            setTimeout(() => {
-                storyText.style.opacity = 1;
-                showLine();
-            }, 1000);
-        }, 2000);
+        setTimeout(showLine, 2500);
     } else {
         continueBtn.style.display = "block";
     }
@@ -222,12 +233,10 @@ function showLine() {
 
 function startStory(){
     index = 0;
-    storyText.style.opacity = 1;
     continueBtn.style.display = "none";
     showLine();
 }
 
-/* Must start music after interaction */
 document.addEventListener("click", () => {
     storyMusic.play().catch(()=>{});
 }, { once: true });
@@ -278,7 +287,7 @@ document.getElementById("restartBtn").onclick = function(){
     storyMusic.play();
     noCount = 1;
     guy.src = "fat1.png";
-    message.innerHTML = "Dr. Dheeraja… will you accept this life-saving chocolate? 🍫💖";
+    message.innerHTML = "Doctor… will you accept this life-saving chocolate? 🍫💖";
     startStory();
 };
 
