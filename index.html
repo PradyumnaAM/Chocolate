@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chocolate Emergency</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Comic Sans MS', cursive;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* INTRO */
+
+#intro {
+    position: fixed;
+    inset: 0;
+    background: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+#storyText {
+    font-size: 48px;
+    max-width: 900px;
+    opacity: 1;
+    transition: opacity 1s;
+}
+
+#continueBtn, #skipBtn {
+    margin-top: 40px;
+    padding: 15px 40px;
+    font-size: 20px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+#skipBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #ff6a88;
+    color: white;
+}
+
+/* GAME */
+
+#gameScreen {
+    display: none;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(-45deg, #ff6a88, #ff99ac, #ff758c, #ffb199);
+    background-size: 400% 400%;
+    animation: gradientMove 8s ease infinite;
+    color: white;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+h1 {
+    margin-top: 20px;
+    font-size: 60px;
+}
+
+#scene {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 150px;
+}
+
+.character {
+    height: 420px;
+    transition: 0.4s ease;
+}
+
+#message {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    margin-bottom: 40px;
+}
+
+button {
+    padding: 20px 50px;
+    font-size: 24px;
+    margin: 15px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#yesBtn { background: #00ffcc; }
+#noBtn { background: #ff0033; color: white; }
+
+button:hover {
+    transform: scale(1.2);
+}
+
+/* Ending */
+
+#ending {
+    position: fixed;
+    inset: 0;
+    background: black;
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 60px;
+}
+
+#restartBtn {
+    margin-top: 40px;
+    padding: 15px 40px;
+    font-size: 22px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="storyMusic" src="story.mp3" loop></audio>
+<audio id="gameMusic" src="game.mp3" loop></audio>
+
+<!-- INTRO -->
+<div id="intro">
+    <button id="skipBtn">Skip ⏭</button>
+    <div id="storyText"></div>
+    <button id="continueBtn" style="display:none;">Continue...</button>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen">
+    <h1>🍫 CHOCOLATE EMERGENCY 🍫</h1>
+
+    <div id="scene">
+        <img src="doctor.png" class="character">
+        <img src="fat1.png" id="guy" class="character">
+    </div>
+
+    <div id="message">
+        Dr. Dheeraja… will you accept this life-saving chocolate? 🍫💖
+    </div>
+
+    <div class="buttons">
+        <button id="yesBtn">YES 💝</button>
+        <button id="noBtn">NO 😡</button>
+    </div>
+</div>
+
+<!-- ENDING -->
+<div id="ending">
+    <div>He Died 😢</div>
+    <div style="font-size:25px;margin-top:20px;">Chocolate Overdose...</div>
+    <button id="restartBtn">Restart 🔄</button>
+</div>
+
+<script>
+
+/* STORY FIXED */
+
+const storyLines = [
+"There was a man named Pradyumna...",
+"A chocolate monster bit him and he has been addicted to chocolates...",
+"If he continues eating chocolates, he is going to DIE...",
+"The only person that can save him is the most famous doctor BUJJI...",
+"Now? What will happen...."
+];
+
+let index = 0;
+const storyText = document.getElementById("storyText");
+const continueBtn = document.getElementById("continueBtn");
+const storyMusic = document.getElementById("storyMusic");
+const gameMusic = document.getElementById("gameMusic");
+
+function showLine() {
+    if(index < storyLines.length){
+        storyText.innerHTML = storyLines[index];
+        index++;
+        setTimeout(() => {
+            storyText.style.opacity = 0;
+            setTimeout(() => {
+                storyText.style.opacity = 1;
+                showLine();
+            }, 1000);
+        }, 2000);
+    } else {
+        continueBtn.style.display = "block";
+    }
+}
+
+function startStory(){
+    index = 0;
+    storyText.style.opacity = 1;
+    continueBtn.style.display = "none";
+    showLine();
+}
+
+/* Must start music after interaction */
+document.addEventListener("click", () => {
+    storyMusic.play().catch(()=>{});
+}, { once: true });
+
+startStory();
+
+/* START GAME */
+
+function startGame(){
+    storyMusic.pause();
+    gameMusic.play().catch(()=>{});
+    document.getElementById("intro").style.display = "none";
+    document.getElementById("gameScreen").style.display = "flex";
+}
+
+document.getElementById("continueBtn").onclick = startGame;
+document.getElementById("skipBtn").onclick = startGame;
+
+/* GAME LOGIC */
+
+let noCount = 1;
+const guy = document.getElementById("guy");
+const ending = document.getElementById("ending");
+const message = document.getElementById("message");
+
+document.getElementById("yesBtn").onclick = function(){
+    guy.src = "handsome.png";
+    message.innerHTML = "He transformed into HANDSOME mode and now offers YOU chocolate 😌🍫";
+};
+
+document.getElementById("noBtn").onclick = function(){
+    noCount++;
+    if(noCount <= 7){
+        guy.src = "fat" + noCount + ".png";
+        message.innerHTML = "He is growing stronger… in CHUBBINESS 😭🍫";
+    }
+    if(noCount > 7){
+        gameMusic.pause();
+        ending.style.display = "flex";
+    }
+};
+
+document.getElementById("restartBtn").onclick = function(){
+    ending.style.display = "none";
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("intro").style.display = "flex";
+    gameMusic.pause();
+    storyMusic.play();
+    noCount = 1;
+    guy.src = "fat1.png";
+    message.innerHTML = "Dr. Dheeraja… will you accept this life-saving chocolate? 🍫💖";
+    startStory();
+};
+
+</script>
+
+</body>
+</html>
